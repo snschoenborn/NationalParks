@@ -30,9 +30,9 @@ var lng = -98.5795;
 var zoom = 5;
 
 //data layers
-var npscenter = L.geoJSON.ajax('data/nps_boundary_centroids.geojson');
+var npscenter = L.geoJSON.ajax('data/nps_boundary_centroids_filtered.geojson');
 var states = L.geoJSON.ajax('data/states.geojson', {color:'none'}).addTo(map);
-var npsbounds = L.geoJSON.ajax('data/nps_boundary_simplified_filtered.json', {
+var npsbounds = L.geoJSON.ajax('data/nps_boundary_simplified_filtered.geojson', {
     color: 'green',
     fill: 'dark green',
     }).addTo(map);
