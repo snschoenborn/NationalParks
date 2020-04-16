@@ -41,7 +41,7 @@ ctlSidebar = L.control.sidebar('sidebar').addTo(map);
 
 //the button icon is not showing up. using bootstrap glypicon graphic
 ctlEasyButton = L.easyButton('fa-crosshairs fa-lg', function() {
-    ctlSidebar.show();
+    ctlSidebar.toggle();
 }).addTo(map);
 
 /* //this can be changed to anythng we want or removed.
