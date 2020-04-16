@@ -2,12 +2,27 @@
 //Create the Leaflet map, set view and zoom levels
 map = L.map('mapid').setView([39.8283, -98.5795],5,);
 lyrOSM = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}', {
-    attribution: 'Tiles &copy; Esri &mdash; Esri, DeLorme, NAVTEQ, TomTom, Intermap, iPC, USGS, FAO, NPS, NRCAN, GeoBase, Kadaster NL, Ordnance Survey, Esri Japan, METI, Esri China (Hong Kong), and the GIS User Community',
-//setting max and min zoom (starts with a comma after attribution informaiton
+//     attribution: 'Tiles &copy; Esri &mdash; Esri, DeLorme, NAVTEQ, TomTom, Intermap, iPC, USGS, FAO, NPS, NRCAN, GeoBase, Kadaster NL, Ordnance Survey, Esri Japan, METI, Esri China (Hong Kong), and the GIS User Community',
+// //setting max and min zoom (starts with a comma after attribution informaiton
     maxZoom: 16,
     minZoom:4
 }).addTo(map);
 
+//adding the layers for switching views
+var Esri_WorldImagery = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+    attribution: 'Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community'
+    }),
+    Esri_WorldTopoMap = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}', {
+    attribution: 'Tiles &copy; Esri &mdash; Esri, DeLorme, NAVTEQ, TomTom, Intermap, iPC, USGS, FAO, NPS, NRCAN, GeoBase, Kadaster NL, Ordnance Survey, Esri Japan, METI, Esri China (Hong Kong), and the GIS User Community'
+});
+
+var baseLayers = {
+    "Imagery": Esri_WorldImagery,
+    //"<span style='color: gray'>Imagery</span>": Esri_WorldImagery,
+    "TopoMap": Esri_WorldTopoMap
+};
+
+L.control.layers(baseLayers).addTo(map);
 
 //used for opening centering of map
 var lat = 39.8283;
@@ -17,13 +32,13 @@ var zoom = 5;
 //data layers
 var npscenter = L.geoJSON.ajax('data/nps_boundary_centroids.geojson');
 var states = L.geoJSON.ajax('data/states.geojson', {color:'none'}).addTo(map);
-var npsbounds = L.geoJSON.ajax('data/nps_boundary_simplified.geojson', {
+var npsbounds = L.geoJSON.ajax('data/nps_boundary_simplified_filtered.json', {
     color: 'green',
     fill: 'dark green',
     }).addTo(map);
     // issue is that you have to click on the center of polygon also tried .bindtooltip but still tricky becase need to hover over center so switched to tooltip so when mouse over you can see the info to show text
     //npsbounds.bindPopup("test");
-    npsbounds.bindTooltip("testing");
+    npsbounds.bindTooltip("test");
 
 
 
@@ -41,8 +56,10 @@ ctlSidebar = L.control.sidebar('sidebar').addTo(map);
 
 //the button icon is not showing up. using bootstrap glypicon graphic
 ctlEasyButton = L.easyButton('fa-crosshairs fa-lg', function() {
+   // alert('you just clicked the html entity \&target;');
     ctlSidebar.toggle();
-}).addTo(map);
+//add information for when hover over the icon
+}, 'Open / Close for Search Options and additional information').addTo(map);
 
 /* //this can be changed to anythng we want or removed.
 //this pops up the link for additional information and holding shift and click show the zoom level
@@ -70,29 +87,31 @@ var searchControl = new L.Control.Search({
    textPlaceholder: 'Enter State',
    initial: false,
    collapsed: false,
-   autoResize: true,
+   autoResize: false,
+
 
   moveToLocation: function(latlng) {
       console.log(latlng +" Coordinates");
-      map.setView(latlng, 6); // set the zoom
+      map.setView(latlng, 7); // set the zoom
   }
 });
 map.addControl( searchControl );
 
-//search control by park name
+//search control by park name based off of nps center
 var searchControl = new L.Control.Search({
     //dataType: "json",
     container: 'sidebar',
-    layer: npscenter,
+    layer: npsbounds,
     propertyName: 'UNIT_NAME',
     textPlaceholder: 'Enter Park Name',
     initial: false,
     collapsed: false,
-    autoResize: true,
+    autoResize: false,
+
 
     moveToLocation: function(latlng) {
         console.log(latlng +" Coordinates");
-        map.setView(latlng, 6); // set the zoom
+        map.setView(latlng, 7); // set the zoom
     }
 });
 map.addControl( searchControl );
