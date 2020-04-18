@@ -18,16 +18,12 @@ var Esri_WorldImagery = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest
 
 var baseLayers = {
     "Imagery": Esri_WorldImagery,
-    //"<span style='color: gray'>Imagery</span>": Esri_WorldImagery,
     "TopoMap": Esri_WorldTopoMap
 };
 
 L.control.layers(baseLayers).addTo(map);
 
-//used for opening centering of map
-var lat = 39.8283;
-var lng = -98.5795;
-var zoom = 5;
+
 
 //data layers
 var npscenter = L.geoJSON.ajax('data/nps_boundary_centroids_filtered.geojson');
@@ -35,13 +31,12 @@ var states = L.geoJSON.ajax('data/states.geojson', {color:'none'}).addTo(map);
 var npsbounds = L.geoJSON.ajax('data/nps_boundary_simplified_filtered.geojson', {
     color: 'green',
     fill: 'dark green',
-    }).addTo(map);
-    // issue is that you have to click on the center of polygon also tried .bindtooltip but still tricky becase need to hover over center so switched to tooltip so when mouse over you can see the info to show text
-    //npsbounds.bindPopup("test");
-    npsbounds.bindTooltip("test");
-
-
-
+    onEachFeature: function(feature, layer){
+        console.log(feature.properties);
+        content = feature.properties.UNIT_NAME + "<br> Placeholder for notice to open sidpanel";
+        layer.bindTooltip(content);
+    }
+}).addTo(map);
 
 //remove leaftlet intial zoom buttons to allow for combined + / zoom to extent / - button
 map.removeControl(map.zoomControl);
@@ -55,13 +50,13 @@ ctlscale = L.control.scale({position:'bottomright', maxWidth:300}).addTo(map);
 ctlSidebar = L.control.sidebar('sidebar').addTo(map);
 
 //the button icon is not showing up. using bootstrap glypicon graphic
-ctlEasyButton = L.easyButton('fa-crosshairs fa-lg', function() {
+ctlEasyButton = L.easyButton('<img src="images/arrow.png">', function() {
    // alert('you just clicked the html entity \&target;');
     ctlSidebar.toggle();
 //add information for when hover over the icon
 }, 'Open / Close for Search Options and additional information').addTo(map);
 
-/* //this can be changed to anythng we want or removed.
+ /* //this can be changed to anythng we want or removed.
 //this pops up the link for additional information and holding shift and click show the zoom level
 function onMapClick(e) {
     //alert("You clicked the map at " + e.latlng);
@@ -70,7 +65,7 @@ function onMapClick(e) {
         alert("Zoom Level:  " + map.getZoom());
     } else {
         //need to add NOAA as a website link. so it can be clicked on as option for more info.
-        alert("Additional Data Can be found on NOAA's Storm Prediction website:  https://www.spc.noaa.gov/wcm/#ATP");
+        alert("Additional information about National Parks can be found in side panel");
     }
 }
 map.on('click', onMapClick); */
@@ -116,7 +111,10 @@ var searchControl = new L.Control.Search({
 });
 map.addControl( searchControl );
 
-
+//used for opening centering of map with the home button
+var lat = 39.8283;
+var lng = -98.5795;
+var zoom = 5;
 
 // custom zoom bar control that includes a Zoom Home function
 L.Control.zoomHome = L.Control.extend({
