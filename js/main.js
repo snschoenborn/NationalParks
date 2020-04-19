@@ -87,7 +87,7 @@ var searchControl = new L.Control.Search({
    layer: states,
    propertyName: 'STATE_NAME',
    textPlaceholder: 'Enter State',
-   initial: false,
+   initial: true,
    collapsed: false,
    autoResize: false,
 
