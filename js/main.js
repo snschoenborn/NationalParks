@@ -41,7 +41,7 @@ var npsbounds = L.geoJSON.ajax('data/nps_boundary_simplified_filtered.geojson', 
         layer.bindTooltip(content);
         layer.on({
             click: function(){
-                setPanel(panelContent);
+                Panel(panelContent, feature.properties, layer);
             }
         });
     }
@@ -123,6 +123,14 @@ function setPanel(panelContent) {
     //$("#panel").html(panelContent);
     ctlSidebar.show();
 };
+
+// function Panel(panelContent, properties, layer) {
+//     this.properties = properties;
+//     this.attribute = attribute;
+//     this.layer = layer;
+//     this.content = panelContent;
+
+// }
 
 //used for opening centering of map with the home button
 var lat = 39.8283;
