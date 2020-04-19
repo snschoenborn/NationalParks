@@ -33,10 +33,17 @@ var npsbounds = L.geoJSON.ajax('data/nps_boundary_simplified_filtered.geojson', 
     fill: 'dark green',
     onEachFeature: function(feature, layer){
         console.log(feature.properties);
-        content = feature.properties.UNIT_NAME + "<br> Placeholder for notice to open sidpanel";
+        content = feature.properties.UNIT_NAME + "<br> Placeholder for notice to open sidepanel";
+        panelContent = feature.properties.UNIT_NAME;
         layer.bindTooltip(content);
+        // layer.on({
+        //     click: function(){
+        //         $("#panel").html(panelContent);
+        //     }
+        // });
     }
 }).addTo(map);
+
 
 //remove leaftlet intial zoom buttons to allow for combined + / zoom to extent / - button
 map.removeControl(map.zoomControl);
@@ -69,15 +76,6 @@ function onMapClick(e) {
     }
 }
 map.on('click', onMapClick); */
-
-//this adds/switches panel content as parks are clicked
-// var PanelContent(properties, attribute, layer){
-//     //object properties
-//     this.properties = properties;
-//     this.attribute = attribute;
-//     this.year = year;
-//     this.content = "Blah, blah" + this.properties.Year + ", " + this.properties.State + ""
-// };
 
 
 //search control for states
