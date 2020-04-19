@@ -32,15 +32,18 @@ var npsbounds = L.geoJSON.ajax('data/nps_boundary_simplified_filtered.geojson', 
     color: 'green',
     fill: 'dark green',
     onEachFeature: function(feature, layer){
-        console.log(feature.properties);
+        //console.log("Name: " + feature.properties.UNIT_NAME + " (" + feature.properties.UNIT_CODE + ")" + " <br>" + "State: " + feature.properties.STATE + " <br>" + "Date Established: " + feature.properties.ESTBLSHD + " <br>" + "Phone Number: " + feature.properties.PHONE + " <br>" + "Website: " + feature.properties.WEBSITE + " <br>" + "Description: " + feature.properties.DESCR);
         content = feature.properties.UNIT_NAME + "<br> Placeholder for notice to open sidepanel";
-        panelContent = feature.properties.UNIT_NAME;
+        panelContent = "<h2>" + feature.properties.UNIT_NAME + "</h2>" + " (" + feature.properties.UNIT_CODE + ")" 
+            + " <br>" + "State: " + feature.properties.STATE + " <br>" + "Date Established: " + feature.properties.ESTBLSHD 
+            + " <br>" + "Phone Number: " + feature.properties.PHONE + " <br>" + "Website: " + feature.properties.WEBSITE + " <br>" 
+            + "Description: " + feature.properties.DESCR;
         layer.bindTooltip(content);
-        // layer.on({
-        //     click: function(){
-        //         $("#panel").html(panelContent);
-        //     }
-        // });
+        layer.on({
+            click: function(){
+                setPanel(panelContent);
+            }
+        });
     }
 }).addTo(map);
 
@@ -63,63 +66,19 @@ ctlEasyButton = L.easyButton('<img src="images/arrow.png">', function() {
 //add information for when hover over the icon
 }, 'Open / Close for Search Options and additional information').addTo(map);
 
- /* //this can be changed to anythng we want or removed.
+//this can be changed to anythng we want or removed.
 //this pops up the link for additional information and holding shift and click show the zoom level
-function onMapClick(e) {
-    //alert("You clicked the map at " + e.latlng);
-    //alert(e.latlng.toString());
-    if (e.originalEvent.shiftKey) {
-        alert("Zoom Level:  " + map.getZoom());
-    } else {
-        //need to add NOAA as a website link. so it can be clicked on as option for more info.
-        alert("Additional information about National Parks can be found in side panel");
-    }
-}
-map.on('click', onMapClick); */
+// function onMapClick(e) {
+//     //alert("You clicked the map at " + e.latlng);
+//     //alert(e.latlng.toString());
+//     if (e.originalEvent.shiftKey) {
+//         alert("Zoom Level:  " + map.getZoom());
+//     } else {
+//         alert("Additional information about National Parks can be found in side panel");
+//     }
+// }
+// map.on('click', onMapClick);
 
-// //Import GeoJSON data
-// function getData(map){
-// 	//load the data
-// 	$.ajax("data/nps_boundary_simplified_filtered.geojson", {
-// 		dataType: "json",
-// 		success: function(response){
-// 			//create an attributes array
-// 			var attributes = processData(response);
-
-// 			createPropSymbols(response, map, attributes);
-// 			createSequenceControls(map, attributes);
-
-// 		}
-// 	});
-// };
-
-// //build an attributes array from the data
-// function processData(data){
-// 	//empty array to hold attributes
-// 	var attributes = [];
-
-// 	//properties of the first feature in the dataset
-// 	var properties = data.features[0].properties;
-// 	//push each attribute name into attributes array
-// 	for (var attribute in properties){
-// 		//only take attributes with population values
-// 		if (attribute.indexOf("Pop") > -1){
-// 			attributes.push(attribute);
-// 		};
-// 	};
-
-// 	return attributes;
-// };
-
-// //Add circle markers for point features to the map
-// function createPropSymbols(data, map, attributes){
-// 	//create a Leaflet GeoJSON layer and add it to the map
-// 	L.geoJson(data, {
-// 		pointToLayer: function(feature, latlng){
-// 			return pointToLayer(feature, latlng, attributes);
-// 		}
-// 	}).addTo(map);
-// };
 
 //search control for states
 var searchControl = new L.Control.Search({
@@ -158,6 +117,12 @@ var searchControl = new L.Control.Search({
     }
 });
 map.addControl( searchControl );
+
+function setPanel(panelContent) {
+    ctlSidebar.setContent(panelContent);
+    //$("#panel").html(panelContent);
+    ctlSidebar.show();
+};
 
 //used for opening centering of map with the home button
 var lat = 39.8283;
@@ -240,6 +205,7 @@ L.Control.zoomHome = L.Control.extend({
         }
     }
 });
+
 // add the new control to the map
 var zoomHome = new L.Control.zoomHome();
 zoomHome.addTo(map);
