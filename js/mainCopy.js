@@ -1,27 +1,124 @@
+//Group 2 National Parks
 
-//Create the Leaflet map, set view and zoom levels
-map = L.map('mapid').setView([39.8283, -98.5795],5,);
-lyrOSM = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}', {
-//     attribution: 'Tiles &copy; Esri &mdash; Esri, DeLorme, NAVTEQ, TomTom, Intermap, iPC, USGS, FAO, NPS, NRCAN, GeoBase, Kadaster NL, Ordnance Survey, Esri Japan, METI, Esri China (Hong Kong), and the GIS User Community',
-// //setting max and min zoom (starts with a comma after attribution informaiton
-    maxZoom: 16,
-    minZoom:4
-}).addTo(map);
+map = createMap();
+var npsbounds = L.layerGroup();
 
-//adding the layers for switching views
-var Esri_WorldImagery = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
-    attribution: 'Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community'
-    }),
-    Esri_WorldTopoMap = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}', {
-    attribution: 'Tiles &copy; Esri &mdash; Esri, DeLorme, NAVTEQ, TomTom, Intermap, iPC, USGS, FAO, NPS, NRCAN, GeoBase, Kadaster NL, Ordnance Survey, Esri Japan, METI, Esri China (Hong Kong), and the GIS User Community'
-});
+function createMap(){
 
-var baseLayers = {
-    "Imagery": Esri_WorldImagery,
-    "TopoMap": Esri_WorldTopoMap
+    //adding all base map layers to enable switching views
+    lyrOSM = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}', {
+            attribution: 'Esri',
+            //setting max and min zoom (starts with a comma after attribution informaiton
+            maxZoom: 16,
+            minZoom:4
+        });
+
+    var Esri_WorldImagery = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+            attribution: 'Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community',
+            maxZoom: 16,
+            minZoom:4
+        }),
+            Esri_WorldTopoMap = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}', {
+            attribution: 'Tiles &copy; Esri &mdash; Esri, DeLorme, NAVTEQ, TomTom, Intermap, iPC, USGS, FAO, NPS, NRCAN, GeoBase, Kadaster NL, Ordnance Survey, Esri Japan, METI, Esri China (Hong Kong), and the GIS User Community',
+            maxZoom: 16,
+            minZoom:4
+        });
+
+    //create map
+    var map = L.map('mapid', {
+        center: [39.8283, -98.5795],
+        zoom: 5,
+        layers: [Esri_WorldTopoMap, npsbounds]
+    });
+
+    var baseLayers = {
+        "Imagery": Esri_WorldImagery,
+        "TopoMap": Esri_WorldTopoMap
+    };
+
+    var overlayMaps = {
+        "Parks": npsbounds
+    };
+
+    //add layer controls
+    L.control.layers(baseLayers).addTo(map);
+
+    //get the attribute data
+    getData(map);
+
 };
 
-L.control.layers(baseLayers).addTo(map);
+function getData(map){
+    //data layers
+    var npscenter = L.geoJSON.ajax('data/nps_boundary_centroids_filtered.geojson');
+    var states = L.geoJSON.ajax('data/states.geojson', {color:'none'}).addTo(map);
+    var npsbounds = L.geoJSON.ajax('data/nps_boundary_simplified_filtered.geojson', {
+        color: 'green',
+        fill: 'dark green',
+        onEachFeature: function(feature, layer){
+            console.log(feature.properties);
+            content = feature.properties.UNIT_NAME + "<br> Placeholder for notice to open sidepanel";
+            panelContent = feature.properties.UNIT_NAME;
+            layer.bindTooltip(content);
+    }.addTo(map)
+});
+
+// function getStateData(map){
+//     $.ajax("data/states.geojson", {
+//         dataType: "json",
+//         success: function(response){
+//             //create an attributes array
+//             var attributes = processData(response);
+
+//             //call functions to create symbols
+//             createSymbols(response, map, attributes);
+//         }
+//     });
+// };
+
+// function getCentroidData(map){
+//     $.ajax("data/nps_boundary_centroids_filtered.geojson", {
+//         dataType: "json",
+//         success: function(response){
+//             //create an attributes array
+//             var attributes = processData(response);
+
+//             //call functions to create symbols
+//             createSymbols(response, map, attributes);
+//         }
+//     });
+// };
+
+// function getPolygonData(map){
+//     $.ajax("data/nps_boundary_centroids_filtered.geojson", {
+//         dataType: "json",
+//         success: function(response){
+//             //create an attributes array
+//             var attributes = processData(response);
+
+//             //call functions to create symbols
+//             createSymbols(response, map, attributes);
+//         }
+//     });
+// };
+
+//build attributes header arrays from the data
+function processData(data){
+    //empty array to hold attributes
+    var attributes = [];
+
+    //properties of the first feature in the dataset
+    var properties = data.features[0].properties;
+
+    //push each attribute name into attributes array
+    for (var x in properties){
+        //only take attributes with a rank value
+        if (x.indexOf("Rank") > -1){
+            attributes.push(x);
+        };
+    };
+    return attributes;
+};
 
 
 

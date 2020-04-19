@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width">
+		<title>Discover US National Parks</title>
+
+		<!--put your external stylesheet links here-->
+        <link rel="stylesheet" href="css/leaflet.css">
+		<link rel="stylesheet" href="css/easy-button.css">
+        <link rel="stylesheet" href="css/L.Control.Sidebar.css">
+        <link rel="stylesheet" href="css/MarkerCluster.css">
+        <link rel="stylesheet" href="css/MarkerCluster.Default.css">
+        <link rel="stylesheet" href="css/bootstrap.css">
+        <link rel="stylesheet" href="css/jquery-ui.css">
+        <link rel="stylesheet" href="css/leaflet-search.css">
+        <link href="http://maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
+        <link rel="stylesheet" href="css/style.css">
+
+
+
+	</head>
+
+	<body>
+
+    <!-- Trigger/Open The Modal -->
+
+<!-- this keeps displaying behind map -->
+    <!-- The Modal -->
+
+    <div id="mapid"></div>
+    <div id="panel"></div>
+    <script type="text/javascript" src="js/leaflet.js"></script>
+    <script src="js/leaflet.ajax.min.js"></script>
+    <script src="js/leaflet-search.js"></script>
+    <script type="text/javascript" src="js/jquery-3.4.1.js"></script> 
+    <script src="js/jquery-ui.min.js"></script>
+    <!-- <script type="text/javascript" src="js/leaflet.markercluster-src.js"></script>
+    <script type="text/javascript" src="js/leaflet.markercluster.js"></script> -->
+    <script src="js/L.Control.Sidebar.js"></script>
+    <script src="js/easy-button.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+
+    <div id="search"></div>
+
+    <!--need to keep, if removed the modal wont work-->
+    <div id="sidebar" class="text-center col-md-12">
+
+        <!--option to show the same info as modal pop up-->
+        <!-- <p>The <strong>show</strong> method shows the modal and the <strong>hide</strong> method hides the modal.</p>-->
+        <br>
+        <br>
+        <h4>National Parks <br> more info here</h4>
+        <br>
+        <br>
+        <div id = "project" class ="col-xs-12">
+            <div id = "divProjLabel" class="text-center col-xs-12">
+                <h6>Discover National Parks by State or Park Name</h6>
+
+        </div>
+
+            <h2><div id="parkname"></h2>
+            <p>The <strong>show</strong> method shows the modal and the <strong>hide</strong> method hides the modal.</p>
+            Trigger the modal with a button
+            <button type="button" class="btn btn-info btn-md" id="myBtn">Hide Modal</button>
+
+            <!-- Modal -->
+        <div class="modal fade" id="myModal" role="dialog">
+            <div class="modal-dialog">
+
+                <!-- Modal content-->
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h4 class="modal-title">Discover US National Parks</h4>
+                    </div>
+                    <div class="modal-body">
+                              <p>This interactive map displays the 62 protected areas designated as US National Parks. These parks are managed by <a href="https://www.nps.gov/index.htm" target="_blank">The National Park Service.</a>
+						<p><strong>Note</strong>: The parks can be searched by state or park name. </p>
+						<p>Data Sources: <a href="https://irma.nps.gov/Datastore/" target="_blank">NPS IRMA Datastore.</a> </p><strong>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+
+    <script>
+        $(document).ready(function(){
+            // Show the Modal on load
+            $("#myModal").modal("show");
+
+            // Hide the Modal
+            $("#myBtn").click(function(){
+                $("#myModal").modal("hide");
+            });
+        });
+    </script>
+    </div>
+
+     <script type="text/javascript" src="js/mainCopy.js"></script>
+
+
+	</body>
+</html>
