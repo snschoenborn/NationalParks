@@ -70,7 +70,14 @@ function onMapClick(e) {
 }
 map.on('click', onMapClick); */
 
-
+//this adds/switches panel content as parks are clicked
+// var PanelContent(properties, attribute, layer){
+//     //object properties
+//     this.properties = properties;
+//     this.attribute = attribute;
+//     this.year = year;
+//     this.content = "Blah, blah" + this.properties.Year + ", " + this.properties.State + ""
+// };
 
 
 //search control for states
