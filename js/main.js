@@ -1,11 +1,11 @@
 
 //Create the Leaflet map, set view and zoom levels
-map = L.map('mapid').setView([39.8283, -98.5795],5,);
+map = L.map('mapid').setView([44.889016, -103.974609],4,);
 lyrOSM = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}', {
 //     attribution: 'Tiles &copy; Esri &mdash; Esri, DeLorme, NAVTEQ, TomTom, Intermap, iPC, USGS, FAO, NPS, NRCAN, GeoBase, Kadaster NL, Ordnance Survey, Esri Japan, METI, Esri China (Hong Kong), and the GIS User Community',
 // //setting max and min zoom (starts with a comma after attribution informaiton
     maxZoom: 16,
-    minZoom:4
+    minZoom: 3
 }).addTo(map);
 
 //adding the layers for switching views
@@ -26,25 +26,96 @@ L.control.layers(baseLayers).addTo(map);
 
 
 //data layers
-var npscenter = L.geoJSON.ajax('data/nps_boundary_centroids_filtered.geojson');
+//var npsinfo = L.geoJSON.ajax('data/nps_boundary_simplified_filtered2.geojson');
+var npscenter = L.geoJSON.ajax('data/nps_centroids.geojson', {
+    color:'none',
+    onEachFeature: function (feature,layer) {
+        content = feature.properties.UNIT_NAME + "<br>Click on park boundary for detailed information";
+        layer.bindTooltip(content);
+    }
+}).addTo(map);
 var states = L.geoJSON.ajax('data/states.geojson', {color:'none'}).addTo(map);
-var npsbounds = L.geoJSON.ajax('data/nps_boundary_simplified_filtered.geojson', {
+var npsbounds = L.geoJSON.ajax('data/nps_boundary.geojson', {
+    color: 'green'
+});
+/* var npsbounds = L.geoJSON.ajax('data/nps_boundary_simplified_filtered.geojson', {
     color: 'green',
     fill: 'dark green',
-    onEachFeature: function(feature, layer){
+    onEachFeature: function (feature, layer) {
         //console.log("Name: " + feature.properties.UNIT_NAME + " (" + feature.properties.UNIT_CODE + ")" + " <br>" + "State: " + feature.properties.STATE + " <br>" + "Date Established: " + feature.properties.ESTBLSHD + " <br>" + "Phone Number: " + feature.properties.PHONE + " <br>" + "Website: " + feature.properties.WEBSITE + " <br>" + "Description: " + feature.properties.DESCR);
         content = feature.properties.UNIT_NAME + "<br> Placeholder for notice to open sidepanel";
-        panelContent = "<h2>" + feature.properties.UNIT_NAME + "</h2>" + " (" + feature.properties.UNIT_CODE + ")" 
-            + " <br>" + "State: " + feature.properties.STATE + " <br>" + "Date Established: " + feature.properties.ESTBLSHD 
-            + " <br>" + "Phone Number: " + feature.properties.PHONE + " <br>" + "Website: " + feature.properties.WEBSITE + " <br>" 
-            + "Description: " + feature.properties.DESCR;
         layer.bindTooltip(content);
-        layer.on({
-            click: function(){
-                Panel(panelContent, feature.properties, layer);
-            }
-        });
     }
+}).addTo(map); */
+
+
+// control that shows park info on hover
+var info = L.control();
+
+info.onAdd = function (map) {
+    document.getElementById("info").innerHTML = "Paragraph changed!";
+    this._div = L.DomUtil.create('div', 'info');
+    this.update();
+    return this._div;
+};
+
+info.update = function (props) {
+    document.getElementById("info").innerHTML = (props ?
+        '<b>' + '<h4>' +  props.UNIT_NAME + '</h4></b><br>' + "<b>State: </b>" + props.STATE + " <br>" + "<b>Date Established: </b>" +  props.ESTBLSHD
+            + " <br>" + "<b>Phone Number: </b>" +  props.PHONE + " <br>" + "<b>Website: </b>" + "<a href=" + '"' + props.WEBSITE + '" target="_blank">' + "Park Homepage" + "</a>" + " <br>"
+            + "<b>Description: </b>" +  props.DESCR + '<img src="' + props.IMAGE + '">'
+        : '<i>Search for a park above or click on a park boundary on the map for more information</i>');
+};
+
+info.addTo(map);
+
+
+
+
+// control that shows state info on hover
+function  highlightFeature(e) {
+    var layer = e.target;
+
+    layer.setStyle({
+        weight: 5,
+        color: '#666',
+        dashArray: '',
+        fillOpacity: 0.7
+    });
+
+    if (!L.Browser.ie && !L.Browser.opera && !L.Browser.edge) {
+        layer.bringToFront();
+    }
+
+    info.update(layer.feature.properties);
+}
+
+var geojson;
+
+function resetHighlight(e) {
+    geojson.resetStyle(e.target);
+    //info.update();
+}
+
+function zoomToFeature(e) {
+    var layer = e.target;
+    map.fitBounds(e.target.getBounds());
+    info.update(layer.feature.properties);
+    ctlSidebar.show();
+}
+
+function onEachFeature(feature, layer) {
+    layer.on({
+        mouseover: highlightFeature,
+        mouseout: resetHighlight,
+        click: zoomToFeature
+    });
+}
+
+
+geojson = L.geoJson.ajax('data/nps_boundary.geojson', {
+    color:'green',
+    onEachFeature: onEachFeature
 }).addTo(map);
 
 
@@ -66,24 +137,11 @@ ctlEasyButton = L.easyButton('<img src="images/arrow.png">', function() {
 //add information for when hover over the icon
 }, 'Open / Close for Search Options and additional information').addTo(map);
 
-//this can be changed to anythng we want or removed.
-//this pops up the link for additional information and holding shift and click show the zoom level
-// function onMapClick(e) {
-//     //alert("You clicked the map at " + e.latlng);
-//     //alert(e.latlng.toString());
-//     if (e.originalEvent.shiftKey) {
-//         alert("Zoom Level:  " + map.getZoom());
-//     } else {
-//         alert("Additional information about National Parks can be found in side panel");
-//     }
-// }
-// map.on('click', onMapClick);
-
 
 //search control for states
 var searchControl = new L.Control.Search({
    //dataType: "json",
-   container: 'sidebar',
+   container: 'search-container',
    layer: states,
    propertyName: 'STATE_NAME',
    textPlaceholder: 'Enter State',
@@ -96,13 +154,14 @@ var searchControl = new L.Control.Search({
       console.log(latlng +" Coordinates");
       map.setView(latlng, 7); // set the zoom
   }
+
 });
 map.addControl( searchControl );
 
 //search control by park name based off of nps center
 var searchControl = new L.Control.Search({
     //dataType: "json",
-    container: 'sidebar',
+    container: 'search-container',
     layer: npsbounds,
     propertyName: 'UNIT_NAME',
     textPlaceholder: 'Enter Park Name',
@@ -133,9 +192,9 @@ function setPanel(panelContent) {
 // }
 
 //used for opening centering of map with the home button
-var lat = 39.8283;
-var lng = -98.5795;
-var zoom = 5;
+var lat = 44.8890;
+var lng = -103.9746;
+var zoom = 4.0;
 
 // custom zoom bar control that includes a Zoom Home function
 L.Control.zoomHome = L.Control.extend({
