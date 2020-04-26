@@ -23,17 +23,16 @@ var baseLayers = {
 
 L.control.layers(baseLayers).addTo(map);
 
-
-
 //data layers
-//var npsinfo = L.geoJSON.ajax('data/nps_boundary_simplified_filtered2.geojson');
 var npscenter = L.geoJSON.ajax('data/nps_centroids.geojson', {
     color:'none',
+    transparency: '100',
     onEachFeature: function (feature,layer) {
-        content = feature.properties.UNIT_NAME + "<br>Click on park boundary for detailed information";
+        content = '<b>' + feature.properties.UNIT_NAME + '</b>' + "<br>Click on park boundary for detailed information";
         layer.bindTooltip(content);
     }
 }).addTo(map);
+
 var states = L.geoJSON.ajax('data/states.geojson', {color:'none'}).addTo(map);
 var npsbounds = L.geoJSON.ajax('data/nps_boundary.geojson', {
     color: 'green'
@@ -49,7 +48,7 @@ var npsbounds = L.geoJSON.ajax('data/nps_boundary.geojson', {
 }).addTo(map); */
 
 
-// control that shows park info on hover
+// control that shows park info on click and hover
 var info = L.control();
 
 info.onAdd = function (map) {
@@ -61,10 +60,15 @@ info.onAdd = function (map) {
 
 info.update = function (props) {
     document.getElementById("info").innerHTML = (props ?
-        '<b>' + '<h4>' +  props.UNIT_NAME + '</h4></b><br>' + "<b>State: </b>" + props.STATE + " <br>" + "<b>Date Established: </b>" +  props.ESTBLSHD
-            + " <br>" + "<b>Phone Number: </b>" +  props.PHONE + " <br>" + "<b>Website: </b>" + "<a href=" + '"' + props.WEBSITE + '" target="_blank">' + "Park Homepage" + "</a>" + " <br>"
-            + "<b>Description: </b>" +  props.DESCR + '<img src="' + props.IMAGE + '">'
+        '<b>' + '<h4>' +  props.UNIT_NAME + '</h4></b><br>' + '<a target ="_blank" href="' 
+        + props.IMAGE + '">' + '<img src ="' + props.IMAGE + '" alt="Park image" width="200">' + '</a>' + '<br><br>' 
+        + "<b>State: </b>" + props.STATE + " <br>" + "<b>Date Established: </b>" +  props.ESTBLSHD
+            + " <br>" + "<b>Phone Number: </b>" +  props.PHONE + " <br>" + "<b>Website: </b>" + "<a href=" 
+            + '"' + props.WEBSITE + '" target="_blank">' + "Park Homepage" + "</a>" + " <br>"
+            + "<b>Description: </b>" +  props.DESCR 
         : '<i>Search for a park above or click on a park boundary on the map for more information</i>');
+    // document.getElementById("image").innerHTML = (props ?
+    //     '<img src ="' + props.IMAGE + '">' : 'no image');
 };
 
 info.addTo(map);
