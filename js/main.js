@@ -56,9 +56,9 @@ info.update = function (props) {
         '<hr>' + '<b>' + '<h4>' +  props.UNIT_NAME + '</h4></b><br>' + '<a target ="_blank" href="' 
         + props.IMAGE + '">' + '<img src ="' + props.IMAGE + '" alt="Park image" width="200">' + '</a>' + '<br><br>' 
         + "<b>State: </b>" + props.STATE + " <br>" + "<b>Date Established: </b>" +  props.ESTBLSHD
-            + " <br>" + "<b>Phone Number: </b>" +  props.PHONE + " <br>" + "<b>Website: </b>" + "<a href=" 
-            + '"' + props.WEBSITE + '" target="_blank">' + "Park Homepage" + "</a>" + " <br><br>"
-            + "<b>Description: </b>" +  props.DESCR 
+        + " <br>" + "<b>Phone Number: </b>" +  props.PHONE + " <br>" + "<b>Website: </b>" + "<a href=" 
+        + '"' + props.WEBSITE + '" target="_blank">' + "Park Homepage" + "</a>" + " <br><br>"
+        + "<b>Description: </b>" +  props.DESCR + '<br><br><b>Activities: </b>' + props.ACTIVITIES
         : '<i>Search for a park above or click on a park boundary on the map for more information</i>');
 };
 
