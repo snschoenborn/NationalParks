@@ -25,30 +25,23 @@ L.control.layers(baseLayers).addTo(map);
 
 //data layers
 var npscenter = L.geoJSON.ajax('data/nps_centroids.geojson', {
-    color:'none',
-    transparency: '100',
-    onEachFeature: function (feature,layer) {
-        content = '<b>' + feature.properties.UNIT_NAME + '</b>' + "<br>Click on park boundary for detailed information";
-        layer.bindTooltip(content);
-    }
-}).addTo(map);
+    color:'none'
+    // onEachFeature: function (feature,layer) {
+    //     content = '<b>' + feature.properties.UNIT_NAME + '</b>' + "<br>Click on park boundary for detailed information";
+    //     layer.bindTooltip(content);
+    //}
+})//.addTo(map);
 
 var states = L.geoJSON.ajax('data/states.geojson', {color:'none'}).addTo(map);
 var npsbounds = L.geoJSON.ajax('data/nps_boundary.geojson', {
-    color: 'green'
-});
-/* var npsbounds = L.geoJSON.ajax('data/nps_boundary_simplified_filtered.geojson', {
-    color: 'green',
-    fill: 'dark green',
-    onEachFeature: function (feature, layer) {
-        //console.log("Name: " + feature.properties.UNIT_NAME + " (" + feature.properties.UNIT_CODE + ")" + " <br>" + "State: " + feature.properties.STATE + " <br>" + "Date Established: " + feature.properties.ESTBLSHD + " <br>" + "Phone Number: " + feature.properties.PHONE + " <br>" + "Website: " + feature.properties.WEBSITE + " <br>" + "Description: " + feature.properties.DESCR);
-        content = feature.properties.UNIT_NAME + "<br> Placeholder for notice to open sidepanel";
-        layer.bindTooltip(content);
-    }
-}).addTo(map); */
+    //color: 'green',
+    // onEachFeature: function (feature, layer) {
+    //     content = '<b>' + feature.properties.UNIT_NAME + '</b>' + "<br>Click on park boundary for detailed information";
+    //     layer.bindTooltip(content);
+    // }
+});//.addTo(map);
 
-
-// control that shows park info on click and hover
+// control that shows park info in panel on click and hover
 var info = L.control();
 
 info.onAdd = function (map) {
@@ -60,21 +53,16 @@ info.onAdd = function (map) {
 
 info.update = function (props) {
     document.getElementById("info").innerHTML = (props ?
-        '<b>' + '<h4>' +  props.UNIT_NAME + '</h4></b><br>' + '<a target ="_blank" href="' 
+        '<hr>' + '<b>' + '<h4>' +  props.UNIT_NAME + '</h4></b><br>' + '<a target ="_blank" href="' 
         + props.IMAGE + '">' + '<img src ="' + props.IMAGE + '" alt="Park image" width="200">' + '</a>' + '<br><br>' 
         + "<b>State: </b>" + props.STATE + " <br>" + "<b>Date Established: </b>" +  props.ESTBLSHD
             + " <br>" + "<b>Phone Number: </b>" +  props.PHONE + " <br>" + "<b>Website: </b>" + "<a href=" 
-            + '"' + props.WEBSITE + '" target="_blank">' + "Park Homepage" + "</a>" + " <br>"
+            + '"' + props.WEBSITE + '" target="_blank">' + "Park Homepage" + "</a>" + " <br><br>"
             + "<b>Description: </b>" +  props.DESCR 
         : '<i>Search for a park above or click on a park boundary on the map for more information</i>');
-    // document.getElementById("image").innerHTML = (props ?
-    //     '<img src ="' + props.IMAGE + '">' : 'no image');
 };
 
 info.addTo(map);
-
-
-
 
 // control that shows state info on hover
 function  highlightFeature(e) {
@@ -109,13 +97,14 @@ function zoomToFeature(e) {
 }
 
 function onEachFeature(feature, layer) {
+    content = '<b>' + feature.properties.UNIT_NAME + '</b>' + "<br>Click on park boundary for detailed information";
+    layer.bindTooltip(content);
     layer.on({
         mouseover: highlightFeature,
-        mouseout: resetHighlight,
+        mouseout: resetHighlight, 
         click: zoomToFeature
     });
 }
-
 
 geojson = L.geoJson.ajax('data/nps_boundary.geojson', {
     color:'green',
@@ -180,20 +169,6 @@ var searchControl = new L.Control.Search({
     }
 });
 map.addControl( searchControl );
-
-function setPanel(panelContent) {
-    ctlSidebar.setContent(panelContent);
-    //$("#panel").html(panelContent);
-    ctlSidebar.show();
-};
-
-// function Panel(panelContent, properties, layer) {
-//     this.properties = properties;
-//     this.attribute = attribute;
-//     this.layer = layer;
-//     this.content = panelContent;
-
-// }
 
 //used for opening centering of map with the home button
 var lat = 44.8890;
